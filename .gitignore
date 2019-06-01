@@ -1,0 +1,15 @@
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+!LICENSE
+
+# Unignore all dirs
+!*/
+
+*.exe
+app/*/manifest.json
+.DS_Store
+dist/
+launch.json

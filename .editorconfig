@@ -1,0 +1,17 @@
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+[*.{js,json,go}]
+charset = utf-8
+indent_style = space
+
+[*.{js,go}]
+indent_size = 4
+
+[*.json]
+indent_size = 2

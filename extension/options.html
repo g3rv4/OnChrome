@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html class="loading">
+
+<head>
+    <title>OnChrome</title>
+    <meta charset="utf-8" />
+</head>
+
+<body style="min-width: 200px;">
+    <h1>OnChrome</h1>
+    <p>The following urls will be opened in Chrome automatically.</p>
+    <form id="the-form"
+        class="container"
+        method="POST"
+        action="">
+        <label>
+            Url <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns">match patterns</a> (one per line)<br />
+            <textarea style="width: 100%" rows="10" id="urls"></textarea>
+        </label>
+        <button type="button" id="save" style="width: 100%">Save</button>
+    </form>
+    <script type="text/javascript" src="options.js"></script>
+</body>
+</html>
