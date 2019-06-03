@@ -4,17 +4,19 @@ A Firefox extension so that certain urls are opened using Chrome. I built it bec
 
 The extension lets you define [url match patterns](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns) to determine which sites should always be opened with Chrome.
 
+Read [my blog post about it](https://g3rv4.com/2019/06/how-to-migrate-to-firefox) where I explain why I built it.
+
+## How do I install it?
+
+1. Install the extension on [the Firefox store](https://addons.mozilla.org/en-US/firefox/addon/onchrome/)
+2. Install the [supporting application](https://github.com/g3rv4/OnChrome/releases)
+
 ## Requirements
 
 * Windows x64 or MacOs (other environments can be supported later, ask!)
 * Chrome installed
 
-## How do I install it?
-
-1. [Find it on the Firefox store](https://addons.mozilla.org/en-US/firefox/addon/onchrome/)
-2. Install the [supporting application](https://github.com/g3rv4/OnChrome/releases)
-
-## BUT! why do you need to install software on your machine?
+## Why do I need to install software on my machine? I never had to do it for an extension before!
 
 Ugh, yeah... I know... that sucks. The reason is that Firefox can't talk to Chrome directly... you need to use [Native Messaging](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging), and that requires a native app that understands the messages from the extension and in turn opens Chrome.
 
