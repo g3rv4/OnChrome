@@ -1,6 +1,8 @@
-package main
+package manageapp
 
 import (
+	"fmt"
+
 	"golang.org/x/sys/windows/registry"
 )
 
@@ -21,4 +23,16 @@ func registerManifest(manifestPath string) error {
 	defer k.Close()
 
 	return k.SetStringValue("", manifestPath)
+}
+
+// Unregister removes the native app registration
+func Unregister() {
+	err := registry.DeleteKey(registry.CURRENT_USER, `Software\Mozilla\NativeMessagingHosts\me.onchro`)
+
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+	} else {
+		fmt.Println("Successfully removed the registry entry")
+		fmt.Println("You can now delete this folder")
+	}
 }

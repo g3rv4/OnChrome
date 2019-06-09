@@ -1,4 +1,4 @@
-package main
+package manageapp
 
 import (
 	"fmt"
@@ -8,7 +8,8 @@ import (
 	"strings"
 )
 
-func main() {
+// Register registers the app to receive native messages
+func Register() {
 	fmt.Println("Saving manifest...")
 
 	manifestPath, err := saveManifest()
@@ -26,7 +27,7 @@ func main() {
 		return
 	}
 
-	fmt.Print("Done!")
+	fmt.Println("Done!")
 }
 
 func saveManifest() (string, error) {
@@ -44,7 +45,6 @@ func saveManifest() (string, error) {
 	}
 
 	basePath := filepath.Dir(ex)
-
 	exPath := getExecutablePath(basePath)
 
 	// escape it for the json file

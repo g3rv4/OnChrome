@@ -11,5 +11,5 @@
 *.exe
 app/*/manifest.json
 .DS_Store
-dist/
+bin/
 launch.json
