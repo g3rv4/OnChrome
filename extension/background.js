@@ -6,28 +6,20 @@ function onError(error) {
     });
 }
 
-let availableToRun = true;
-const listener = function (tabId, changeInfo, tab) {
-    if (!availableToRun) {
-        return;
-    }
-    availableToRun = false;
-
-    const url = tab.url;
-    browser.runtime.sendNativeMessage(
-        "me.onchro",
-        { url: url }).then(() => browser.tabs.remove(tabId), onError);
-
-    setTimeout(function () {
-        availableToRun = true;
-    }, 500);
-};
+const blockUrl = function (requestDetails) {
+    return new Promise(function(resolve, reject) {
+        browser.runtime.sendNativeMessage(
+            "me.onchro",
+            { url: requestDetails.url }).then(() => browser.tabs.remove(requestDetails.tabId), onError);
+        resolve({cancel: true});
+      });
+}
 
 function registerUrls(urls) {
     if (urls) {
         urls = JSON.parse(urls);
         if (urls && urls.length) {
-            browser.tabs.onUpdated.addListener(listener, { urls });
+            browser.webRequest.onBeforeRequest.addListener(blockUrl, { urls: urls, types: ["main_frame"] }, ["blocking"])
         }
     }
 }
@@ -36,7 +28,7 @@ chrome.storage.sync.get(["urls"], res => registerUrls(res.urls))
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === "urlsUpdated") {
-        browser.tabs.onUpdated.removeListener(listener);
+        browser.webRequest.onBeforeRequest.removeListener(blockUrl)
         chrome.storage.sync.get(["urls"], res => registerUrls(res.urls))
     }
 });
