@@ -9,7 +9,7 @@ Read [my blog post about it](https://g3rv4.com/2019/06/how-to-migrate-to-firefox
 ## How do I install it?
 
 1. Install the extension on [the Firefox store](https://addons.mozilla.org/en-US/firefox/addon/onchrome/)
-2. Install the [supporting application](https://github.com/g3rv4/OnChrome/releases)
+2. Install the [supporting application](https://onchro.me/native-applications)
 
 ## Requirements
 
