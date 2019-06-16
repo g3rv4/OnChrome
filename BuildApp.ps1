@@ -25,8 +25,8 @@ for ($i=0; $i -lt $elements.Count; $i++) {
     if (Test-Path $mainPath) {
         Push-Location -Path $element.FullName
 
-        /Users/gervasio/Projects/go/bin/go build
-        env GOOS=windows GOARCH=amd64 /Users/gervasio/Projects/go/bin/go build
+        go build
+        env GOOS=windows GOARCH=amd64 go build
 
         Move-Item -Path $element.PSChildName -Destination $binMac.FullName
         Move-Item -Path "$($element.PSChildName).exe" -Destination $binWindows.FullName
