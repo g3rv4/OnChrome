@@ -51,6 +51,11 @@ Copy-Item -Path $bundleTemplatePath -Recurse -Destination $appPath
 Copy-Item -Path "$($binMac.FullName)/Menu" -Destination "$($appPath)/Contents/MacOS/"
 Copy-Item -Path "$($binMac.FullName)/FirefoxEndpoint" -Destination "$($appPath)/Contents/MacOS/"
 
+# Update the version on Info.plist
+$plistPath = Join-Path $appPath "Contents/Info.plist"
+$plistContent = Get-Content -Path $plistPath
+Set-Content -Path $plistPath -Value $plistContent.Replace("{Version}", $Version)
+
 if ($CodeSign) {
     codesign -s $CodeSignIdentity -v --timestamp --deep --options runtime $appPath
     if ($LASTEXITCODE) {

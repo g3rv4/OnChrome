@@ -9,7 +9,7 @@
   <key>CFBundleIdentifier</key>
   <string>me.onchro</string>
   <key>CFBundleVersion</key>
-  <string>0.1</string>
+  <string>{Version}</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleExecutable</key>
