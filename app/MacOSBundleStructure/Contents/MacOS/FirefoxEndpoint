@@ -1,0 +1,4 @@
+#!/bin/bash
+SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )" # thanks https://stackoverflow.com/a/4774063/920295
+cd $SCRIPTPATH
+./OnChromeExecutable ff

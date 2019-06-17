@@ -1,4 +1,4 @@
-package main
+package extensionendpoint
 
 import (
 	"os/exec"

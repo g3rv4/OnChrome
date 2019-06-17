@@ -1,4 +1,4 @@
-package main
+package extensionendpoint
 
 import (
 	"io"
@@ -8,7 +8,8 @@ import (
 	"github.com/qrtz/nativemessaging"
 )
 
-func main() {
+// AnswerToExtension receives the input from the extension from stdin and writes the answer back
+func AnswerToExtension() {
 	decoder := nativemessaging.NewNativeJSONDecoder(os.Stdin)
 	encoder := nativemessaging.NewNativeJSONEncoder(os.Stdout)
 

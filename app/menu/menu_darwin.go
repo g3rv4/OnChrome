@@ -1,13 +1,14 @@
-package manageapp
+package menu
 
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"os/user"
 )
 
-func getExecutablePath(currentPath string) string {
-	return currentPath + "/FirefoxEndpoint"
+func getExecutablePath(currentPath string) (string, error) {
+	return currentPath + "/FirefoxEndpoint", nil
 }
 
 func getManifestPath(currentPath string) (string, error) {
@@ -25,22 +26,21 @@ func registerManifest(manifestPath string) error {
 	return nil
 }
 
-// Unregister removes the native app registration
-func Unregister() {
-	usr, err := user.Current()
-	if err != nil {
-		fmt.Printf("Error: %s", err)
-		return
-	}
+func clearTerminal() {
+	cmd := exec.Command("clear")
+	cmd.Stdout = os.Stdout
+	cmd.Run()
+}
 
-	manifestPath := usr.HomeDir + "/Library/Application Support/Mozilla/NativeMessagingHosts/me.onchro.json"
+func unregister() {
+	manifestPath, _ := getManifestPath("")
 
-	err = os.Remove(manifestPath)
+	err := os.Remove(manifestPath)
 	if err != nil {
 		fmt.Printf("Error: %s", err)
 		return
 	} else {
 		fmt.Printf("Successfully deleted %s\n", manifestPath)
-		fmt.Println("You can now delete this folder")
+		fmt.Println("You can now delete this application")
 	}
 }

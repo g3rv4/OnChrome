@@ -48,8 +48,7 @@ if (Test-Path $appPath){
     Remove-Item -LiteralPath $appPath -Force -Recurse
 }
 Copy-Item -Path $bundleTemplatePath -Recurse -Destination $appPath
-Copy-Item -Path "$($binMac.FullName)/Menu" -Destination "$($appPath)/Contents/MacOS/"
-Copy-Item -Path "$($binMac.FullName)/FirefoxEndpoint" -Destination "$($appPath)/Contents/MacOS/"
+Copy-Item -Path "$($binMac.FullName)/OnChrome" -Destination "$($appPath)/Contents/MacOS/OnChromeExecutable"
 
 # Update the version on Info.plist
 $plistPath = Join-Path $appPath "Contents/Info.plist"
