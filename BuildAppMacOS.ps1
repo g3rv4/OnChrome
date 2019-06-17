@@ -12,33 +12,11 @@ if (Test-Path "bin"){
     Remove-Item -LiteralPath "bin" -Force -Recurse
 }
 New-Item -Path "." -Name "bin" -ItemType "directory" | Out-Null
-$binWindows = New-Item -Path "bin" -Name "win64" -ItemType "directory"
 $binMac = New-Item -Path "bin" -Name "macOS" -ItemType "directory"
 
-$elements = Get-ChildItem -Path "app" -Directory
-
-for ($i=0; $i -lt $elements.Count; $i++) {
-    $element = $elements[$i]
-
-    $mainPath = Join-Path $element.FullName "main.go"
-
-    if (Test-Path $mainPath) {
-        Push-Location -Path $element.FullName
-
-        go build
-        env GOOS=windows GOARCH=amd64 go build
-
-        Move-Item -Path $element.PSChildName -Destination $binMac.FullName
-        Move-Item -Path "$($element.PSChildName).exe" -Destination $binWindows.FullName
-
-        Pop-Location
-    }
-}
-
-# zip the windows version
-Push-Location $binWindows.FullName
-$windowsZipName = "OnChromeWin64.$($Version).zip"
-zip -r $windowsZipName . -x ".*" -x "__MACOSX"
+Push-Location "app/OnChrome"
+go build
+Move-Item -Path OnChrome -Destination $binMac.FullName
 Pop-Location
 
 # Make the MacOS Bundle
@@ -112,4 +90,3 @@ if ($CodeSign) {
 
 $dist = New-Item -Path "bin" -Name "dist" -ItemType "directory"
 Copy-Item -Path $dmgPath -Destination $dist.FullName
-Copy-Item -Path "$($binWindows.FullName)/$($windowsZipName)" -Destination $dist.FullName
