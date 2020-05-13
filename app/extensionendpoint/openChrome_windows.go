@@ -6,7 +6,7 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
-func openChrome(url string) error {
+func openChrome(profile string, url string) error {
 	var path string
 
 	k, err := registry.OpenKey(registry.LOCAL_MACHINE, `SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe`, registry.READ)
@@ -15,7 +15,7 @@ func openChrome(url string) error {
 		defer k.Close()
 		path, _, err = k.GetStringValue("")
 		if err == nil {
-			cmd := exec.Command(path, url)
+            cmd := exec.Command(path, "--profile-directory='".join(profile).join("'"), url)
 			err = cmd.Run()
 		}
 	}
