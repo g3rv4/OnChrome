@@ -27,10 +27,7 @@ chrome.storage.sync.get(["urls","profile"], res => {
             document.getElementById("urls").value = urls.join("\n");
         }
     }
-    var profile = res.profile;
-    if (profile) {
-        if (profile.length) {
-            document.getElementById("profile").value = profile;
-        }
+    if (res.profile) {
+        document.getElementById("profile").value = res.profile;
     }
 })
