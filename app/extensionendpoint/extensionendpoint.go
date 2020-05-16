@@ -47,8 +47,8 @@ func AnswerToExtension() {
 }
 
 type message struct {
-    Profile string `json:"profile"`,
-    Url string `json:"url"`
+	Profile string `json:"profile"`
+	Url     string `json:"url"`
 }
 
 type response struct {
