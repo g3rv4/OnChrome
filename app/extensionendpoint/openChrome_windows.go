@@ -15,7 +15,12 @@ func openChrome(profile string, url string) error {
 		defer k.Close()
 		path, _, err = k.GetStringValue("")
 		if err == nil {
-            cmd := exec.Command(path, "--profile-directory='".join(profile).join("'"), url)
+			var cmd *exec.Cmd
+			if len(profile) > 0 {
+				cmd = exec.Command(path, "--profile-directory=" + profile, url)
+			} else {
+				cmd = exec.Command(path, url)
+			}
 			err = cmd.Run()
 		}
 	}
