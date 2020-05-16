@@ -31,7 +31,7 @@ func AnswerToExtension() {
 			rsp.Text = "Unknown OS"
 		} else {
 			rsp.Text = "ok"
-			err = openChrome(msg.Url)
+			err = openChrome(msg.Profile, msg.Url)
 
 			if err != nil {
 				rsp.Success = false
@@ -47,7 +47,8 @@ func AnswerToExtension() {
 }
 
 type message struct {
-	Url string `json:"url"`
+	Profile string `json:"profile"`
+	Url     string `json:"url"`
 }
 
 type response struct {

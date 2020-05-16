@@ -8,14 +8,18 @@
 
 <body style="min-width: 200px;">
     <h1>OnChrome</h1>
-    <p>The following urls will be opened in Chrome automatically.</p>
     <form id="the-form"
         class="container"
         method="POST"
         action="">
+    <p>The following urls will be opened in Chrome automatically.</p>
         <label>
             Url <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns">match patterns</a> (one per line)<br />
             <textarea style="width: 100%" rows="10" id="urls"></textarea>
+        </label>
+        <label>
+            Chrome profile (leave blank for <i>last-used</i> profile):
+            <input type="text" size="15" id="profile"></input>
         </label>
         <button type="button" id="save" style="width: 100%">Save</button>
     </form>
