@@ -12,7 +12,7 @@ save.addEventListener("click", () => {
     }
     browser.storage.sync.set({
         urls: JSON.stringify(valueToSave),
-        profile: JSON.stringify(profile)
+        profile: profile
     }, () => {
         chrome.runtime.sendMessage({ type: "urlsUpdated" });
         window.close();
@@ -29,7 +29,6 @@ chrome.storage.sync.get(["urls","profile"], res => {
     }
     var profile = res.profile;
     if (profile) {
-        profile = JSON.parse(profile);
         if (profile.length) {
             document.getElementById("profile").value = profile;
         }

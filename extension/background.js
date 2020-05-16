@@ -6,16 +6,18 @@ function onError(error) {
     });
 }
 
+var currentProfile;
 const blockUrl = function (requestDetails) {
     return new Promise(function(resolve, reject) {
         browser.runtime.sendNativeMessage(
             "me.onchro",
-            { url: requestDetails.url }).then(() => browser.tabs.remove(requestDetails.tabId), onError);
+            { url: requestDetails.url, profile: currentProfile }).then(() => browser.tabs.remove(requestDetails.tabId), onError);
         resolve({cancel: true});
       });
 }
 
-function registerUrls(urls) {
+function registerUrls(urls, profile) {
+    currentProfile = profile;
     if (urls) {
         urls = JSON.parse(urls);
         if (urls && urls.length) {
@@ -29,6 +31,6 @@ chrome.storage.sync.get(["urls"], res => registerUrls(res.urls))
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === "urlsUpdated") {
         browser.webRequest.onBeforeRequest.removeListener(blockUrl)
-        chrome.storage.sync.get(["urls"], res => registerUrls(res.urls))
+        chrome.storage.sync.get(["urls", "profile"], res => registerUrls(res.urls, res.profile))
     }
 });
