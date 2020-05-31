@@ -6,31 +6,36 @@ function onError(error) {
     });
 }
 
-var currentProfile;
+var currentProfile, currentExclusions;
 const blockUrl = function (requestDetails) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
+        if (currentExclusions.find(r => requestDetails.url.match(r))) {
+            resolve({ cancel: false });
+            return
+        }
         browser.runtime.sendNativeMessage(
             "me.onchro",
             { url: requestDetails.url, profile: currentProfile }).then(() => browser.tabs.remove(requestDetails.tabId), onError);
-        resolve({cancel: true});
-      });
+        resolve({ cancel: true });
+    });
 }
 
-function registerUrls(urls, profile) {
+function registerUrls(urls, exclusions, profile) {
     currentProfile = profile;
     if (urls) {
         urls = JSON.parse(urls);
+        currentExclusions = exclusions ? JSON.parse(exclusions).map(s => new RegExp(s)) : [];
         if (urls && urls.length) {
             browser.webRequest.onBeforeRequest.addListener(blockUrl, { urls: urls, types: ["main_frame"] }, ["blocking"])
         }
     }
 }
 
-chrome.storage.sync.get(["urls"], res => registerUrls(res.urls))
+chrome.storage.sync.get(["urls", "profile", "exclusions"], res => registerUrls(res.urls, res.exclusions, res.profile))
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === "urlsUpdated") {
         browser.webRequest.onBeforeRequest.removeListener(blockUrl)
-        chrome.storage.sync.get(["urls", "profile"], res => registerUrls(res.urls, res.profile))
+        chrome.storage.sync.get(["urls", "profile", "exclusions"], res => registerUrls(res.urls, res.exclusions, res.profile))
     }
 });
