@@ -18,5 +18,12 @@ namespace OnChrome.Core.Helpers
                 .WithArguments(arguments)
                 .ExecuteAsync();
         }
+
+        protected override async Task OpenFirefoxOnWebappAsyncImpl()
+        {
+            await Cli.Wrap("open")
+                .WithArguments("-a Firefox http://localhost:12346")
+                .ExecuteAsync();
+        }
     }
 }

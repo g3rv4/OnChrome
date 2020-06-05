@@ -12,6 +12,9 @@ namespace OnChrome.Core.Helpers
         public static Task OpenChromeAsync(string url, string? profile) =>
             Instance.OpenChromeAsyncImpl(url, profile);
 
+        public static Task OpenFirefoxOnWebappAsync() =>
+            Instance.OpenFirefoxOnWebappAsyncImpl();
+
         private static OsDependentTasks GetInstance()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -27,5 +30,7 @@ namespace OnChrome.Core.Helpers
         }
 
         protected abstract Task OpenChromeAsyncImpl(string url, string? profile);
+
+        protected abstract Task OpenFirefoxOnWebappAsyncImpl();
     }
 }

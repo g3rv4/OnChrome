@@ -9,5 +9,10 @@ namespace OnChrome.Core.Helpers
         {
             throw new NotImplementedException();
         }
+
+        protected override Task OpenFirefoxOnWebappAsyncImpl()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

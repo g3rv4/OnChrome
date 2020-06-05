@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using OnChrome.Core.Helpers;
 
 namespace OnChrome.Web
@@ -15,14 +11,23 @@ namespace OnChrome.Web
     {
         public static async Task Main(string[] args)
         {
-            await Task.Delay(10000);
             if (Console.IsInputRedirected)
             {
+                // when this happens, it's because Firefox is sending us a native message.
+#if DEBUG
+                // useful to be able to attach a debugger to the process and see what's going on
+                await Task.Delay(10000);
+#endif
                 await NativeMessagesProcessor.ProcessAsync();
             }
             else
             {
-                CreateHostBuilder(args).Build().Run();
+                var host = CreateHostBuilder(args).Build();
+                var life = host.Services.GetRequiredService<IHostApplicationLifetime>();
+                life.ApplicationStarted.Register(() => {
+                    OsDependentTasks.OpenFirefoxOnWebappAsync().GetAwaiter().GetResult();
+                });
+                await host.RunAsync();
             }
         }
 
@@ -30,7 +35,8 @@ namespace OnChrome.Web
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>()
+                        .UseUrls("http://*:12346");
                 });
     }
 }
