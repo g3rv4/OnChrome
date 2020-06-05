@@ -15,7 +15,14 @@ const blockUrl = function (requestDetails) {
         }
         browser.runtime.sendNativeMessage(
             "me.onchro",
-            { url: requestDetails.url, profile: currentProfile }).then(() => browser.tabs.remove(requestDetails.tabId), onError);
+            { command: "open", url: requestDetails.url, profile: currentProfile })
+            .then(r => {
+                if (r.success) {
+                    browser.tabs.remove(requestDetails.tabId)
+                } else {
+                    onError(r.errorMessage);
+                }
+            }, onError);
         resolve({ cancel: true });
     });
 }
