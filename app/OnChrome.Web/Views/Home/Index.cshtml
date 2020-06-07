@@ -1,8 +1,19 @@
-﻿@{
+﻿@using OnChrome.Core.Models.Enums
+@model IndexViewModel
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">OnChrome native application</h1>
+    <p>Making OnChrome run takes two parts: a native application and a Firefox extension.</p>
+    <p>Native application: @Model.NativeMessagingState</p>
+    @if (Model.NativeMessagingState == RegistrationState.Registered || Model.NativeMessagingState == RegistrationState.RegisteredDifferentHandler)
+    {
+        <p><a class="nav-link text-dark" asp-controller="Home" asp-action="Unregister">Unregister</a></p>
+    }
+    else if (Model.NativeMessagingState == RegistrationState.Unregistered || Model.NativeMessagingState == RegistrationState.RegisteredDifferentHandler)
+    {
+        <p><a class="nav-link text-dark" asp-controller="Home" asp-action="Register">Register</a></p>
+    }
 </div>
