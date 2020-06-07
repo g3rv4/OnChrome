@@ -6,11 +6,19 @@ namespace OnChrome.Web.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index(string? extensionVersion, bool? missingExtension)
         {
+            if (extensionVersion == null && !missingExtension.HasValue)
+            {
+                return View("GetExtensionVersion");
+            }
+            
             var model = new IndexViewModel
             {
                 NativeMessagingState = OsDependentTasks.GetNativeMessagingState(),
+                ExtensionVersion = extensionVersion,
+                CompatibilityStatus = ExtensionVersionHelper.GetCompatibiltyStatus(extensionVersion, out var appVersion),
+                AppVersion = appVersion,
             };
             return View(model);
         }

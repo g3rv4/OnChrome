@@ -11,7 +11,7 @@ namespace OnChrome.Core.Models
             (BaseNMRequest?)JsonConvert.DeserializeObject(json, typeof(BaseNMRequest), IncomingMessageConverter.Instance);
     }
 
-    public class VersionRequest : BaseNMRequest
+    public class CompatibilityRequest : BaseNMRequest
     {
         public string ExtensionVersion { get; set; }
     }

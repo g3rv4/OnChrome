@@ -1,3 +1,5 @@
+using OnChrome.Core.Models.Enums;
+
 namespace OnChrome.Core.Models
 {
     public abstract class BaseNMResponse
@@ -20,15 +22,15 @@ namespace OnChrome.Core.Models
         }
     }
 
-    public class VersionResponse : BaseNMResponse
+    public class CompatibilityResponse : BaseNMResponse
     {
         public string? AppVersion { get; }
-        public bool IsCompatible { get; }
+        public CompatibilityStatus CompatibilityStatus { get; }
 
-        public VersionResponse(string? appVersion, bool isCompatible) : base(success: true)
+        public CompatibilityResponse(string? appVersion, CompatibilityStatus compatibilityStatus) : base(success: true)
         {
             AppVersion = appVersion;
-            IsCompatible = isCompatible;
+            CompatibilityStatus = compatibilityStatus;
         }
     }
 

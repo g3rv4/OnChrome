@@ -46,3 +46,11 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         chrome.storage.sync.get(["urls", "profile", "exclusions"], res => registerUrls(res.urls, res.exclusions, res.profile))
     }
 });
+
+browser.contentScripts.register(
+    {
+        matches: ["*://localhost/*"],
+        js: [{ file: "inject-version.js" }],
+        runAt: "document_start"
+    }
+)

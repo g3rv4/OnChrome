@@ -15,7 +15,7 @@ namespace OnChrome.Core.Helpers
             
             var response = request switch
             {
-                VersionRequest m => VersionAction.Process(m),
+                CompatibilityRequest m => CompatibilityAction.Process(m),
                 OpenChromeRequest m => await OpenChromeAction.ProcessAsync(m),
                 _ => new FailedResponse("Could not process the incoming message"),
             };

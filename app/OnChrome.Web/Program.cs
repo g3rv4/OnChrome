@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OnChrome.Core.Helpers;
+using OnChrome.Core.Models.Enums;
 
 namespace OnChrome.Web
 {
@@ -22,6 +23,12 @@ namespace OnChrome.Web
             }
             else
             {
+                var nativeMessagingState = OsDependentTasks.GetNativeMessagingState();
+                if (nativeMessagingState != RegistrationState.Registered)
+                {
+                    OsDependentTasks.SetupNativeMessaging();
+                }
+                
                 var host = CreateHostBuilder(args).Build();
                 var life = host.Services.GetRequiredService<IHostApplicationLifetime>();
                 life.ApplicationStarted.Register(() => {
@@ -36,7 +43,7 @@ namespace OnChrome.Web
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                        .UseUrls("http://*:12346");
+                        .UseUrls("http://127.0.0.1:12346");
                 });
     }
 }

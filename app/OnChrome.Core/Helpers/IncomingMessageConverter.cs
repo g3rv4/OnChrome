@@ -15,7 +15,7 @@ namespace OnChrome.Core.Helpers
         private static Dictionary<string, Func<BaseNMRequest>> _factories =
             new Dictionary<string, Func<BaseNMRequest>>
             {
-                ["version"] = () => new VersionRequest(),
+                ["compatibility"] = () => new CompatibilityRequest(),
                 ["open"] = () => new OpenChromeRequest(),
             };
         
