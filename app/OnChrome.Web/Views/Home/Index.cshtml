@@ -4,33 +4,46 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-@section Scripts
-{
-    <script type="text/javascript">
-    window.postMessage({
-        command: "getVersion"
-    })
-    </script>
-}
 
-<div class="text-center">
-    <h1 class="display-4">OnChrome application</h1>
-    <p>Making OnChrome run takes two parts: an application and a Firefox extension.</p>
-    <p>Application: @Model.NativeMessagingState (v @Model.AppVersion)</p>
-    @if (Model.NativeMessagingState == RegistrationState.Registered || Model.NativeMessagingState == RegistrationState.RegisteredDifferentHandler)
-    {
-        <p><a class="nav-link text-dark" asp-controller="Home" asp-action="Unregister">Unregister</a></p>
-    }
-    else if (Model.NativeMessagingState == RegistrationState.Unregistered || Model.NativeMessagingState == RegistrationState.RegisteredDifferentHandler)
-    {
-        <p><a class="nav-link text-dark" asp-controller="Home" asp-action="Register">Register</a></p>
-    }
-    @if (Model.ExtensionVersion.HasValue())
-    {
-        <p>Firefox extension: Installed (v @Model.ExtensionVersion). Compatibility status: @Model.CompatibilityStatus</p>
-    }
-    else
-    {
-        <p>Firefox extension: Not installed</p>
-    }
+<div class="columns is-flex is-vcentered is-centered cont mt-0">
+    <div class="box">
+        <article class="media">
+            <div class="media-content">
+                <div class="content">
+                    <div class="columns mb-0">
+                        <div class="column is-narrow pr-1">
+                            <img src="/logo.svg" style="height: 40px;"/>
+                        </div>
+                        <div class="column pl-1">
+                            <h1 class="title">
+                                OnChrome
+                            </h1>
+                        </div>
+                    </div>
+                    <p>Making OnChrome run takes two parts: an application and a Firefox extension.</p>
+                    <p>Application: @Model.NativeMessagingState (@("v" + Model.AppVersion))</p>
+                    @if (Model.NativeMessagingState == RegistrationState.Registered || Model.NativeMessagingState == RegistrationState.RegisteredDifferentHandler)
+                    {
+                        <p>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Unregister">Unregister</a>
+                        </p>
+                    }
+                    else if (Model.NativeMessagingState == RegistrationState.Unregistered || Model.NativeMessagingState == RegistrationState.RegisteredDifferentHandler)
+                    {
+                        <p>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Register">Register</a>
+                        </p>
+                    }
+                    @if (Model.ExtensionVersion.HasValue())
+                    {
+                        <p>Firefox extension: Installed (@("v" + Model.ExtensionVersion)). Compatibility status: @Model.CompatibilityStatus</p>
+                    }
+                    else
+                    {
+                        <p>Firefox extension: Not installed</p>
+                    }
+                </div>
+            </div>
+        </article>
+    </div>
 </div>

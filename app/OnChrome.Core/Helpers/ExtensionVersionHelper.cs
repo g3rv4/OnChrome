@@ -1,11 +1,13 @@
 using System;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using OnChrome.Core.Models.Enums;
 
 namespace OnChrome.Core.Helpers
 {
     public static class ExtensionVersionHelper
     {
+        private static Regex _versionWithoutRevision = new Regex(@"^([0-9]+\.[0-9]+\.[0-9]+)", RegexOptions.Compiled);
         public static CompatibilityStatus GetCompatibiltyStatus(string? extensionVersion, out string appVersion)
         {
             var version = Assembly.GetEntryAssembly()?.GetName().Version;
@@ -13,8 +15,8 @@ namespace OnChrome.Core.Helpers
             {
                 throw new Exception("Could not determine the app version");
             }
-
-            appVersion = version.ToString();
+            
+            appVersion = _versionWithoutRevision.Match(version.ToString()).Groups[1].Value;
             if (extensionVersion.IsNullOrEmpty())
             {
                 return CompatibilityStatus.MissingExtension;
