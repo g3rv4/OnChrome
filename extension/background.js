@@ -47,10 +47,83 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-browser.contentScripts.register(
-    {
-        matches: ["*://localhost/*"],
-        js: [{ file: "inject-version.js" }],
-        runAt: "document_start"
+// This shuts down the web server when the user navigates away from the OnChrome local site
+// I will convert this to typescript someday
+var watching;
+function shutdownApp() {
+    fetch('http://localhost:12346/shutdown');
+    clearInterval(watching);
+    watching = undefined;
+}
+
+var onChromeTab;
+function watchTheUrl() {
+    if (watching) {
+        return;
     }
-)
+    watching = setInterval(() => {
+        if (!onChromeTab) {
+            return;
+        }
+        browser.tabs.get(onChromeTab).then(tab => {
+            if (!tab.url.startsWith("http://localhost:12346")) {
+                shutdownApp();
+            }
+        }, () => {
+            shutdownApp();
+        })
+    }, 1000);
+}
+
+const injectVersion = (tabId, changeInfo, tab) => {
+    if (changeInfo.status === "loading" && changeInfo.url && changeInfo.url.startsWith("http://localhost:12346")) {
+        browser.tabs.executeScript(tab.id, {
+            file: "/inject-version.js",
+            runAt: "document_start"
+          });
+        onChromeTab = tab.id;
+        watchTheUrl();
+    } else {
+        console.log(changeInfo);
+    }
+}
+
+browser.tabs.onUpdated.addListener(injectVersion, {
+    urls: ["*://localhost/*"],
+    properties: ["status"]
+})
+
+// when the extension is installed, refresh the local OnChrome webserver tabs, so that we see if there are
+// any messages there
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.tabs.query({ url: "*://localhost/*" }, tabs => {
+        for (var i = 0; i < tabs.length; i++){
+            const tab = tabs[i];
+            if (tab.url.startsWith("http://localhost:12346")) {
+                chrome.tabs.reload(tab.id);
+            }
+        }
+    });
+});
+
+// have the extension check the status of the native app
+async function checkStatus()
+{
+    let success = false;
+    try {
+        const response = await browser.runtime.sendNativeMessage("me.onchro", {
+            command: "compatibility",
+            extensionVersion: browser.runtime.getManifest().version,
+            url: '?' // passing this as url so that old versions (the golang one) errors out
+        });
+        success = response.success && response.compatibilityStatus === "Ok"
+    } catch {}
+
+    browser.browserAction.setBadgeText({text: success ? "" : "!"});
+
+    if (!success) {
+        setTimeout(checkStatus, 10000);
+    }
+}
+
+checkStatus()

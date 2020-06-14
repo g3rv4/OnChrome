@@ -34,5 +34,12 @@ namespace OnChrome.Web.Controllers
             OsDependentTasks.SetupNativeMessaging();
             return RedirectToAction(nameof(Index));
         }
+
+        [Route("shutdown")]
+        public IActionResult Shutdown()
+        {
+            Program.CancellationTokenSource.Cancel();
+            return Content("ok");
+        }
     }
 }

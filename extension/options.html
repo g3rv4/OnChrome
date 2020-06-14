@@ -4,29 +4,44 @@
 <head>
     <title>OnChrome</title>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="/css/bulma.0.9.min.css" />
+    <link rel="stylesheet" href="/css/site.css"/>
 </head>
 
-<body style="min-width: 200px;">
-    <h1>OnChrome</h1>
-    <form id="the-form"
-        class="container"
-        method="POST"
-        action="">
-    <p>The following urls will be opened in Chrome automatically.</p>
-        <label>
-            Url <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns">match patterns</a> (one per line)<br />
-            <textarea style="width: 100%" rows="10" id="urls"></textarea>
-        </label>
-        <label>
-            Exclusions: Regular expression matches (one per line)<br />
-            <textarea style="width: 100%" rows="10" id="exclusions"></textarea>
-        </label>
-        <label>
-            Chrome profile (leave blank for <i>last-used</i> profile):
-            <input type="text" size="15" id="profile"></input>
-        </label>
-        <button type="button" id="save" style="width: 100%">Save</button>
-    </form>
+<body style="height: 400px;">
+    <div style="width: 400px;" class="cont">
+    <div class="columns is-flex is-vcentered is-centered cont mt-0">
+        <div class="box" style="width: 90%;">
+            <article class="media">
+                <div class="media-content">
+                    <div class="content">
+                        <form id="the-form"
+                        class="container"
+                        method="POST"
+                        action="">
+                    <p>The following urls will be opened in Chrome automatically.</p>
+                        <label>
+                            Url <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns">match patterns</a> (one per line)<br />
+                            <textarea style="width: 100%" rows="5" id="urls"></textarea>
+                        </label>
+                        <label>
+                            Regular expression matches (one per line)<br />
+                            <textarea style="width: 100%" rows="3" id="exclusions"></textarea>
+                        </label>
+                        <label>
+                            Chrome profile (leave blank for <i>last-used</i> profile):
+                            <input type="text" size="15" id="profile"></input>
+                        </label>
+                        <button type="button" id="save" style="width: 100%">Save</button>
+                    </form>
+
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+    </div>
     <script type="text/javascript" src="options.js"></script>
 </body>
 </html>

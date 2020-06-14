@@ -1,4 +1,6 @@
 using System;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +12,8 @@ namespace OnChrome.Web
 {
     public class Program
     {
+        public static CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
+        
         public static async Task Main(string[] args)
         {
             if (Console.IsInputRedirected)
@@ -34,7 +38,24 @@ namespace OnChrome.Web
                 life.ApplicationStarted.Register(() => {
                     OsDependentTasks.OpenFirefoxOnWebappAsync().GetAwaiter().GetResult();
                 });
-                await host.RunAsync();
+
+                // is there another version running? if so, kill it! this will make upgrading easier
+                using (var client = new HttpClient())
+                {
+                    client.Timeout = TimeSpan.FromMilliseconds(200);
+                    try
+                    {
+                        var response = await client.GetAsync("http://localhost:12346/shutdown");
+                        if (response.IsSuccessStatusCode)
+                        {
+                            // give it time to shut down
+                            await Task.Delay(1000);
+                        }
+                    }
+                    catch {}
+                }
+                
+                await host.RunAsync(CancellationTokenSource.Token);
             }
         }
 

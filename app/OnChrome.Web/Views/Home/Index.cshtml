@@ -1,12 +1,24 @@
 ﻿@using OnChrome.Core.Models.Enums
-@using OnChrome.Core
 @model IndexViewModel
 @{
     ViewData["Title"] = "Home Page";
+
+    var appClass = Model.CompatibilityStatus.IsAppOk() && Model.NativeMessagingState == RegistrationState.Registered 
+        ? "has-text-success"
+        : "has-text-danger";
+    var extClass = Model.CompatibilityStatus.IsExtensionOk() ? "has-text-success" : "has-text-danger";
+}
+
+@section Scripts
+{
+    <script type="text/javascript">
+        var clean = location.pathname;
+        history.replaceState({}, document.title, clean);
+    </script>
 }
 
 <div class="columns is-flex is-vcentered is-centered cont mt-0">
-    <div class="box">
+    <div class="box" style="max-width: 600px;">
         <article class="media">
             <div class="media-content">
                 <div class="content">
@@ -21,26 +33,35 @@
                         </div>
                     </div>
                     <p>Making OnChrome run takes two parts: an application and a Firefox extension.</p>
-                    <p>Application: @Model.NativeMessagingState (@("v" + Model.AppVersion))</p>
-                    @if (Model.NativeMessagingState == RegistrationState.Registered || Model.NativeMessagingState == RegistrationState.RegisteredDifferentHandler)
+                    <p class="@appClass">
+                        <b>Application:</b>
+                        @if (Model.NativeMessagingState != RegistrationState.Registered)
+                        {
+                            <span>@Model.NativeMessagingState. <a asp-controller="Home" asp-action="Register">Register</a></span>
+                        }
+                        else
+                        {
+                            <span>@Model.CompatibilityStatus.GetAppDetails()</span>
+                            @if (!Model.CompatibilityStatus.IsAppOk())
+                            {
+                                <span>Download the latest version from <a href="https://onchro.me/native-applications">the website</a>.</span>
+                            }
+                        }
+                    </p>
+                    <p class="@extClass">
+                        <b>Extension:</b> @Model.CompatibilityStatus.GetExtensionDetails()
+                        @if (!Model.CompatibilityStatus.IsExtensionOk())
+                        {
+                            <span>Download the latest version from <a href="https://addons.mozilla.org/en-US/firefox/addon/onchrome/">the Firefox store</a>.</span> 
+                        }
+                    </p>
+                    @if (Model.CompatibilityStatus.IsAppOk() && Model.CompatibilityStatus.IsExtensionOk() && Model.NativeMessagingState == RegistrationState.Registered)
                     {
-                        <p>
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Unregister">Unregister</a>
-                        </p>
-                    }
-                    else if (Model.NativeMessagingState == RegistrationState.Unregistered || Model.NativeMessagingState == RegistrationState.RegisteredDifferentHandler)
-                    {
-                        <p>
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Register">Register</a>
-                        </p>
-                    }
-                    @if (Model.ExtensionVersion.HasValue())
-                    {
-                        <p>Firefox extension: Installed (@("v" + Model.ExtensionVersion)). Compatibility status: @Model.CompatibilityStatus</p>
-                    }
-                    else
-                    {
-                        <p>Firefox extension: Not installed</p>
+                        <div class="">
+                            <p class="has-text-weight-bold">
+                                Everything should be good :) Enjoy OnChrome!
+                            </p>
+                        </div>
                     }
                 </div>
             </div>
