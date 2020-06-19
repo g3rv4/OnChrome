@@ -114,7 +114,7 @@ async function checkStatus()
         const response = await browser.runtime.sendNativeMessage("me.onchro", {
             command: "compatibility",
             extensionVersion: browser.runtime.getManifest().version,
-            url: '?' // passing this as url so that old versions (the golang one) errors out
+            url: '?' // passing this as url so that old versions (the golang ones) error out
         });
         success = response.success && response.compatibilityStatus === "Ok"
     } catch {}

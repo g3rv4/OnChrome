@@ -49,3 +49,53 @@ chrome.storage.sync.get(["urls","profile","exclusions"], res => {
         document.getElementById("profile").value = res.profile;
     }
 })
+
+function closeModal()
+{
+    Array.from(document.getElementsByClassName("modal")).forEach(e => {
+        e.classList.remove("is-active");
+    });
+}
+
+function bindCloseModal()
+{
+    Array.from(document.querySelectorAll(".modal .delete, .modal-background")).forEach(e => {
+        e.onclick = closeModal;
+    });
+}
+
+document.querySelectorAll("a").forEach(e => {
+    e.addEventListener("click", el => {
+        el.preventDefault();
+
+        chrome.tabs.create({ url: el.target.href }, ()=> window.close());
+    });
+});
+
+async function showWarningIfNeeded()
+{
+    let modalToShow = undefined;
+    try {
+        const response = await browser.runtime.sendNativeMessage("me.onchro", {
+            command: "compatibility",
+            extensionVersion: browser.runtime.getManifest().version,
+            url: '?' // passing this as url so that old versions (the golang ones) error out
+        });
+        if (!response.success) {
+            modalToShow = "AppNeedsUpdate"
+        } else if (response.compatibilityStatus != "Ok") {
+            modalToShow = response.compatibilityStatus;
+        }
+    } catch {
+        modalToShow = "AppNotInstalled";
+    }
+
+    closeModal();
+
+    if (modalToShow) {
+        document.getElementById(modalToShow).classList.add("is-active");
+        bindCloseModal();
+    }
+}
+
+showWarningIfNeeded();
