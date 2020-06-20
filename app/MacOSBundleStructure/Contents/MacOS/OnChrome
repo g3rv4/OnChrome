@@ -3,5 +3,5 @@ SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )" # thanks https://stackoverflow.c
 if [[ $SCRIPTPATH == *"AppTranslocation"* ]]; then
   osascript -e "display alert \"Please copy this application somewhere on your machine. It can't be run from the image.\" as critical"
 else
-  open -a Terminal "$SCRIPTPATH/OnChromeExecutable"
+  open -a Terminal "$SCRIPTPATH/OnChrome.Web"
 fi

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,8 +64,9 @@ namespace OnChrome.Web
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    var webroot = Path.Combine(AppContext.BaseDirectory, "wwwroot");
                     webBuilder.UseStartup<Startup>()
-                        .UseUrls("http://127.0.0.1:12346");
+                        .UseUrls("http://127.0.0.1:12346").UseWebRoot(webroot);
                 });
     }
 }

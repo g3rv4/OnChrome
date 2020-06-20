@@ -2,9 +2,10 @@
   "title": "OnChrome",
   "icon-size": 80,
   "window": {
-    "size": { "width": 240, "height": 160 }
+    "size": { "width": 400, "height": 160 }
   },
   "contents": [
-    { "x": 160, "y": 90, "type": "file", "path": "bin/macOS/OnChrome.app" }
+    { "x": 280, "y": 90, "type": "link", "path": "/Applications" },
+    { "x": 120, "y": 90, "type": "file", "path": "bin/macOS/OnChrome.app" }
   ]
 }

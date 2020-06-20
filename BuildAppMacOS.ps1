@@ -14,11 +14,6 @@ if (Test-Path "bin"){
 New-Item -Path "." -Name "bin" -ItemType "directory" | Out-Null
 $binMac = New-Item -Path "bin" -Name "macOS" -ItemType "directory"
 
-Push-Location "app/OnChrome"
-go build
-Move-Item -Path OnChrome -Destination $binMac.FullName
-Pop-Location
-
 # Make the MacOS Bundle
 $appPath = Join-Path $binMac "OnChrome.app"
 $bundleTemplatePath = Join-Path "app" "MacOSBundleStructure"
@@ -26,7 +21,11 @@ if (Test-Path $appPath){
     Remove-Item -LiteralPath $appPath -Force -Recurse
 }
 Copy-Item -Path $bundleTemplatePath -Recurse -Destination $appPath
-Copy-Item -Path "$($binMac.FullName)/OnChrome" -Destination "$($appPath)/Contents/MacOS/OnChromeExecutable"
+
+Push-Location "app/OnChrome.Web"
+dotnet publish -c Release -r osx-x64
+Move-Item -Path bin/Release/netcoreapp3.1/osx-x64/publish/* -Destination "$($appPath)/Contents/MacOS"
+Pop-Location
 
 # Update the version on Info.plist
 $plistPath = Join-Path $appPath "Contents/Info.plist"
@@ -55,7 +54,7 @@ if ($CodeSign) {
 
     "Sending the bundle $bundle to Apple for notarization"
 
-    $applePwd = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($AppleAccountPassword))
+    $applePwd = ConvertFrom-SecureString $AppleAccountPassword -AsPlainText
 
     $response = (xcrun altool --notarize-app --primary-bundle-id $bundle --username $AppleAccountId --password $applePwd 2>&1 --file $dmgPath) | Out-String
 
