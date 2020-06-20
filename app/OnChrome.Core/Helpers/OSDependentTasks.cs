@@ -30,9 +30,6 @@ namespace OnChrome.Core.Helpers
         public static Task OpenChromeAsync(string url, string? profile) =>
             Instance.OpenChromeAsyncImpl(url, profile);
 
-        public static Task OpenFirefoxOnWebappAsync() =>
-            Instance.OpenFirefoxOnWebappAsyncImpl();
-
         public static RegistrationState GetNativeMessagingState()
         {
             if (!File.Exists(Instance.ManifestPath))
@@ -74,8 +71,6 @@ namespace OnChrome.Core.Helpers
         protected abstract string ManifestPath { get; }
 
         protected abstract Task OpenChromeAsyncImpl(string url, string? profile);
-
-        protected abstract Task OpenFirefoxOnWebappAsyncImpl();
 
         protected abstract string? GetExecutablePathFromAssemblyLocation(string? assemblyLocation);
     }

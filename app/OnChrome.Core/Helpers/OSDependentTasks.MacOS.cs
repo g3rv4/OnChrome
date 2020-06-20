@@ -31,13 +31,6 @@ namespace OnChrome.Core.Helpers
                 .ExecuteAsync();
         }
 
-        protected override async Task OpenFirefoxOnWebappAsyncImpl()
-        {
-            await Cli.Wrap("open")
-                .WithArguments("-a Firefox http://localhost:12346")
-                .ExecuteAsync();
-        }
-
         protected override string? GetExecutablePathFromAssemblyLocation(string? assemblyLocation) =>
             assemblyLocation?.Replace(".dll", "");
     }

@@ -12,11 +12,6 @@ namespace OnChrome.Core.Helpers
             throw new NotImplementedException();
         }
 
-        protected override Task OpenFirefoxOnWebappAsyncImpl()
-        {
-            throw new NotImplementedException();
-        }
-
         protected override string? GetExecutablePathFromAssemblyLocation(string? assemblyLocation)
         {
             throw new NotImplementedException();

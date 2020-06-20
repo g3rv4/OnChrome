@@ -7,3 +7,4 @@ app/OnChrome/versioninfo.json
 obj/
 .idea/
 *.user
+.vscode/
