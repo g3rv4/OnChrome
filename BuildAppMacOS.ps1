@@ -4,59 +4,82 @@ param(
 
     [Parameter(ParameterSetName='CodeSign',Mandatory=$false)][switch] $CodeSign,
     [Parameter(ParameterSetName='CodeSign',Mandatory=$true)][string] $CodeSignIdentity,
+    [Parameter(ParameterSetName='CodeSign',Mandatory=$true)][string] $CodeSignPackageIdentity,
     [Parameter(ParameterSetName='CodeSign',Mandatory=$true)][string] $AppleAccountId,
     [Parameter(ParameterSetName='CodeSign',Mandatory=$true)][securestring] $AppleAccountPassword
 )
 
-if (Test-Path "bin"){
+function copyScript
+{
+    param(
+        [Parameter(Mandatory=$True)][string] $Source,
+        [Parameter(Mandatory=$True)][string] $Dest
+    )
+
+    New-Item -ItemType File -Path $Dest -Force
+    Copy-Item $Source $Dest -Force
+    chmod u+x $Dest
+}
+
+$binMac = Join-Path (pwd) bin
+if (Test-Path $binMac){
     Remove-Item -LiteralPath "bin" -Force -Recurse
 }
 New-Item -Path "." -Name "bin" -ItemType "directory" | Out-Null
 $binMac = New-Item -Path "bin" -Name "macOS" -ItemType "directory"
 
-# Make the MacOS Bundle
-$appPath = Join-Path $binMac "OnChrome.app"
-$bundleTemplatePath = Join-Path "app" "MacOSBundleStructure"
-if (Test-Path $appPath){
-    Remove-Item -LiteralPath $appPath -Force -Recurse
-}
-Copy-Item -Path $bundleTemplatePath -Recurse -Destination $appPath
+$macOsInstallerFilesPath = Join-Path (pwd) "app" "MacOSPackages"
 
-Push-Location "app/OnChrome.Web"
-dotnet publish -c Release -r osx-x64
-Move-Item -Path bin/Release/netcoreapp3.1/osx-x64/publish/* -Destination "$($appPath)/Contents/MacOS"
+$installerPath = Join-Path $binMac "Installers"
+copyScript -Source "$($macOsInstallerFilesPath)/installer-postinstall" -Dest "$($installerPath)/Installer/scripts/postinstall"
+copyScript -Source "$($macOsInstallerFilesPath)/uninstaller-postinstall" -Dest "$($installerPath)/Uninstaller/scripts/postinstall"
+
+Push-Location "app/OnChrome"
+dotnet publish -c Release -r osx-x64 -o "$($installerPath)/Installer/payload/usr/local/share/OnChrome"
 Pop-Location
 
-# Update the version on Info.plist
-$plistPath = Join-Path $appPath "Contents/Info.plist"
-$plistContent = Get-Content -Path $plistPath
-Set-Content -Path $plistPath -Value $plistContent.Replace("{Version}", $Version)
-
 if ($CodeSign) {
-    codesign -s $CodeSignIdentity -v --timestamp --deep --options runtime $appPath
+    Push-Location "$($installerPath)/Installer/payload/usr/local/share/OnChrome"
+    codesign -s $CodeSignIdentity -v --timestamp --options runtime *.dylib
     if ($LASTEXITCODE) {
-        "Error code signing the app bundle"
+        "Error code signing the dylib libraries"
         exit $LASTEXITCODE
     }
+
+    codesign -s $CodeSignIdentity -v --timestamp --options runtime --entitlements "$($macOsInstallerFilesPath)/entitlements.plist" OnChrome
+    if ($LASTEXITCODE) {
+        "Error code signing the app"
+        exit $LASTEXITCODE
+    }
+    Pop-Location
 }
 
-$dmgName = "OnChromeMacOS.$($Version).dmg"
-if (Test-Path $dmgName){
-    Remove-Item -LiteralPath $dmgName -Force
-}
+Push-Location $installerPath
 
-$dmgPath = Join-Path $binMac.FullName $dmgName
-appdmg dmgspec.json $dmgPath
+pkgbuild --root Installer/payload --scripts Installer/scripts --identifier me.onchro OnChrome.unsigned.pkg
+pkgbuild --nopayload --scripts Uninstaller/scripts --identifier me.onchro.uninstall OnChrome.Uninstall.unsigned.pkg
 
 if ($CodeSign) {
+    productsign --sign $CodeSignPackageIdentity --timestamp OnChrome.unsigned.pkg OnChrome.pkg
+    productsign --sign $CodeSignPackageIdentity --timestamp OnChrome.Uninstall.unsigned.pkg OnChrome.Uninstall.pkg
+}
+
+Pop-Location
+
+function staple {
+    param (
+        [Parameter(Mandatory=$True)][string] $File,
+        [Parameter(Mandatory=$True)][string] $Bundle
+    )
+
     $timestamp = [int][double]::Parse((Get-Date -UFormat %s))
-    $bundle = "me.onchro.$($Version)-$($timestamp)"
+    $bundle = "$($Bundle).$($Version)-$($timestamp)"
 
     "Sending the bundle $bundle to Apple for notarization"
 
     $applePwd = ConvertFrom-SecureString $AppleAccountPassword -AsPlainText
 
-    $response = (xcrun altool --notarize-app --primary-bundle-id $bundle --username $AppleAccountId --password $applePwd 2>&1 --file $dmgPath) | Out-String
+    $response = (xcrun altool --notarize-app --primary-bundle-id $bundle --username $AppleAccountId --password $applePwd 2>&1 --file $File) | Out-String
 
     $id = [regex]::match($response,'RequestUUID = ([a-z0-9-]+)\b').Groups[1].Value
 
@@ -81,11 +104,17 @@ if ($CodeSign) {
 
     if ($status -ne "success") {
         "ERROR: Unexpected status: $status"
+        $response
         exit 1
     }
 
-    xcrun stapler staple $dmgPath
+    xcrun stapler staple $File
 }
 
-$dist = New-Item -Path "bin" -Name "dist" -ItemType "directory"
-Copy-Item -Path $dmgPath -Destination $dist.FullName
+if ($CodeSign) {
+    staple -File "$($installerPath)/OnChrome.pkg" -Bundle me.onchro
+    staple -File "$($installerPath)/OnChrome.Uninstall.pkg" -Bundle me.onchro.uninstall
+}
+
+# $dist = New-Item -Path "bin" -Name "dist" -ItemType "directory"
+# Copy-Item -Path $dmgPath -Destination $dist.FullName

@@ -62,9 +62,7 @@ async function checkStatus()
 
     browser.browserAction.setBadgeText({text: success ? "" : "!"});
 
-    if (!success) {
-        setTimeout(checkStatus, 10000);
-    }
+    setTimeout(checkStatus, 10000);
 }
 
 checkStatus()

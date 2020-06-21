@@ -1,0 +1,4 @@
+#!/bin/sh
+sudo -u $USER /usr/local/share/OnChrome/OnChrome register
+echo '/usr/local/share/OnChrome' > /etc/paths.d/OnChrome
+exit 0
