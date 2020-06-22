@@ -8,11 +8,11 @@ namespace OnChrome
 {
     class Program
     {
-        private static string[] _validCommands = new[] {"register", "unregister"};
+        private static string[] _validCommands = new[] {"register", "unregister", "uninstall"};
         static async Task Main(string[] args)
         {
-            var command = args.Length > 0 && _validCommands.Contains(args[1])
-                ? args[1]
+            var command = args.Length > 0 && _validCommands.Contains(args[0])
+                ? args[0]
                 : null;
             
             if (command == null && Console.IsInputRedirected)
@@ -33,6 +33,13 @@ namespace OnChrome
                         break;
                     case "unregister":
                         OsDependentTasks.UnregisterNativeMessaging();
+                        break;
+                    case "uninstall":
+                        var (success, message) = await OsDependentTasks.UninstallAsync();
+                        if (!success)
+                        {
+                            Console.WriteLine("Failure: " + message);
+                        }
                         break;
                     default:
                         Console.WriteLine("OnChrome v" + Assembly.GetEntryAssembly()?.GetName().Version);

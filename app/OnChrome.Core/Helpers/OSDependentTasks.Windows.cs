@@ -12,6 +12,11 @@ namespace OnChrome.Core.Helpers
             throw new NotImplementedException();
         }
 
+        protected override Task<(bool, string?)> UninstallAsyncImpl()
+        {
+            throw new NotImplementedException();
+        }
+
         protected override string? GetExecutablePathFromAssemblyLocation(string? assemblyLocation)
         {
             throw new NotImplementedException();

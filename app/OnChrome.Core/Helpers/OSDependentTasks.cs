@@ -30,6 +30,9 @@ namespace OnChrome.Core.Helpers
         public static Task OpenChromeAsync(string url, string? profile) =>
             Instance.OpenChromeAsyncImpl(url, profile);
 
+        public static Task<(bool, string?)> UninstallAsync() =>
+            Instance.UninstallAsyncImpl();
+
         public static RegistrationState GetNativeMessagingState()
         {
             if (!File.Exists(Instance.ManifestPath))
@@ -71,6 +74,8 @@ namespace OnChrome.Core.Helpers
         protected abstract string ManifestPath { get; }
 
         protected abstract Task OpenChromeAsyncImpl(string url, string? profile);
+
+        protected abstract Task<(bool, string?)> UninstallAsyncImpl();
 
         protected abstract string? GetExecutablePathFromAssemblyLocation(string? assemblyLocation);
     }

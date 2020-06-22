@@ -9,16 +9,19 @@ param(
     [Parameter(ParameterSetName='CodeSign',Mandatory=$true)][securestring] $AppleAccountPassword
 )
 
-function copyScript
+function copyFileCreatingFolder
 {
     param(
         [Parameter(Mandatory=$True)][string] $Source,
-        [Parameter(Mandatory=$True)][string] $Dest
+        [Parameter(Mandatory=$True)][string] $Dest,
+        [Parameter(Mandatory=$false)][switch] $MakeExecutable
     )
 
     New-Item -ItemType File -Path $Dest -Force
     Copy-Item $Source $Dest -Force
-    chmod u+x $Dest
+    if ($MakeExecutable) {
+        chmod u+x $Dest
+    }
 }
 
 $binMac = Join-Path (pwd) bin
@@ -31,8 +34,8 @@ $binMac = New-Item -Path "bin" -Name "macOS" -ItemType "directory"
 $macOsInstallerFilesPath = Join-Path (pwd) "app" "MacOSPackages"
 
 $installerPath = Join-Path $binMac "Installers"
-copyScript -Source "$($macOsInstallerFilesPath)/installer-postinstall" -Dest "$($installerPath)/Installer/scripts/postinstall"
-copyScript -Source "$($macOsInstallerFilesPath)/uninstaller-postinstall" -Dest "$($installerPath)/Uninstaller/scripts/postinstall"
+copyFileCreatingFolder -Source "$($macOsInstallerFilesPath)/Installer/postinstall" -Dest "$($installerPath)/Installer/scripts/postinstall" -MakeExecutable
+copyFileCreatingFolder -Source "$($macOsInstallerFilesPath)/Uninstaller/postinstall" -Dest "$($installerPath)/Uninstaller/scripts/postinstall" -MakeExecutable
 
 Push-Location "app/OnChrome"
 dotnet publish -c Release -r osx-x64 -o "$($installerPath)/Installer/payload/usr/local/share/OnChrome"
@@ -56,12 +59,66 @@ if ($CodeSign) {
 
 Push-Location $installerPath
 
-pkgbuild --root Installer/payload --scripts Installer/scripts --identifier me.onchro OnChrome.unsigned.pkg
-pkgbuild --nopayload --scripts Uninstaller/scripts --identifier me.onchro.uninstall OnChrome.Uninstall.unsigned.pkg
+function buildInstaller
+{
+    param(
+        [Parameter(Mandatory=$True)][string] $pkg,
+        [Parameter(Mandatory=$True)][string] $resources,
+        [Parameter(Mandatory=$True)][string] $title
+    )
+
+    productbuild --synthesize --package $pkg distribution.xml
+
+    $distributionPath = Join-Path (pwd) distribution.xml
+    [xml]$xmlDoc = Get-Content $distributionPath
+    $gui = $xmlDoc['installer-gui-script']
+
+    $titleElement = $xmlDoc.CreateElement("title")
+    $titleValue = $xmlDoc.CreateTextNode($title)
+    $titleElement.AppendChild($titleValue);
+    $gui.AppendChild($titleElement)
+
+    $domains = $xmlDoc.CreateElement("domains")
+    $domains.SetAttribute("enable_anywhere", "false")
+    $domains.SetAttribute("enable_currentUserHome", "false")
+    $domains.SetAttribute("enable_localSystem", "true")
+    $gui.AppendChild($domains);
+
+    $welcome = $xmlDoc.CreateElement("welcome")
+    $welcome.SetAttribute("file", "welcome.html")
+    $welcome.SetAttribute("mime-type", "text/html")
+    $gui.AppendChild($welcome)
+
+    $conclusion = $xmlDoc.CreateElement("conclusion")
+    $conclusion.SetAttribute("file", "conclusion.html")
+    $conclusion.SetAttribute("mime-type", "text/html")
+    $gui.AppendChild($conclusion)
+
+    $xmlDoc.Save($distributionPath)
+
+    productbuild --distribution $distributionPath --package-path $pkg --resources $resources temp.pkg
+    Remove-Item $pkg
+    Move-Item temp.pkg $pkg
+}
+
+pkgbuild --nopayload --scripts Uninstaller/scripts --identifier me.onchro.uninstall --version $Version OnChrome.Uninstall.unsigned.pkg
+buildInstaller OnChrome.Uninstall.unsigned.pkg "$($macOsInstallerFilesPath)/Uninstaller/resources" "OnChrome Uninstaller"
+
+if ($CodeSign) {
+    productsign --sign $CodeSignPackageIdentity --timestamp OnChrome.Uninstall.unsigned.pkg OnChrome.Uninstall.pkg
+} else {
+    Rename-Item OnChrome.Uninstall.unsigned.pkg OnChrome.Uninstall.pkg
+}
+
+Copy-Item OnChrome.Uninstall.pkg Installer/payload/usr/local/share/OnChrome/
+
+pkgbuild --root Installer/payload --scripts Installer/scripts --identifier me.onchro --version $Version OnChrome.unsigned.pkg
+buildInstaller OnChrome.unsigned.pkg "$($macOsInstallerFilesPath)/Installer/resources" "OnChrome"
 
 if ($CodeSign) {
     productsign --sign $CodeSignPackageIdentity --timestamp OnChrome.unsigned.pkg OnChrome.pkg
-    productsign --sign $CodeSignPackageIdentity --timestamp OnChrome.Uninstall.unsigned.pkg OnChrome.Uninstall.pkg
+} else {
+    Rename-Item OnChrome.unsigned.pkg OnChrome.pkg
 }
 
 Pop-Location
@@ -113,8 +170,5 @@ function staple {
 
 if ($CodeSign) {
     staple -File "$($installerPath)/OnChrome.pkg" -Bundle me.onchro
-    staple -File "$($installerPath)/OnChrome.Uninstall.pkg" -Bundle me.onchro.uninstall
+    copyFileCreatingFolder -Source "$($installerPath)/OnChrome.pkg" -Dest "dist/$($Version)/OnChrome.pkg"
 }
-
-# $dist = New-Item -Path "bin" -Name "dist" -ItemType "directory"
-# Copy-Item -Path $dmgPath -Destination $dist.FullName
