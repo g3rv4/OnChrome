@@ -76,7 +76,7 @@ async function showWarningIfNeeded()
 {
     let modalToShow = undefined;
     try {
-        const response = await browser.runtime.sendNativeMessage("me.onchro", {
+        const response = await browser.runtime.sendNativeMessage("me.onchro.netcore", {
             command: "compatibility",
             extensionVersion: browser.runtime.getManifest().version,
             url: '?' // passing this as url so that old versions (the golang ones) error out

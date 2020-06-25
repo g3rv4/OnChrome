@@ -9,7 +9,7 @@ namespace OnChrome.Core.Models
         private static AppManifest? _instance;
         public static AppManifest Instance => _instance ??= new AppManifest
         (
-            name: "me.onchro",
+            name: "me.onchro.netcore",
             description: "Extension to open certain urls on chrome. Visit onchro.me for details",
             path: OsDependentTasks.PathToExecutable ?? "",
             type: "stdio",

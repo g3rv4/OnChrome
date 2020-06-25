@@ -13,7 +13,7 @@ namespace OnChrome.Core.Helpers
         private string GetManifestPath()
         {
             var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            return Path.Combine(home, "Library/Application Support/Mozilla/NativeMessagingHosts/me.onchro.json");
+            return Path.Combine(home, "Library/Application Support/Mozilla/NativeMessagingHosts/me.onchro.netcore.json");
         }
 
         protected override async Task OpenChromeAsyncImpl(string url, string? profile)
@@ -33,7 +33,10 @@ namespace OnChrome.Core.Helpers
 
         protected override async Task<(bool, string?)> UninstallAsyncImpl()
         {
-            var directory = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            var directory = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location);
+            if (directory == null)
+                throw new Exception("Could not get the directory of the entry assembly");
+
             var uninstallerPath = Path.Combine(directory, "OnChrome.Uninstall.pkg");
             
             if (!File.Exists(uninstallerPath))

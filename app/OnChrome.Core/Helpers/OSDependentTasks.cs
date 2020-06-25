@@ -58,6 +58,8 @@ namespace OnChrome.Core.Helpers
             }
 
             File.WriteAllText(Instance.ManifestPath, AppManifest.Instance.ToJson());
+
+            Instance.FinishSettingUpNativeMessaging();
         }
 
         public static void UnregisterNativeMessaging()
@@ -66,6 +68,8 @@ namespace OnChrome.Core.Helpers
             {
                 File.Delete(Instance.ManifestPath);
             }
+
+            Instance.FinishUnregisteringNativeMessaging();
         }
         
         public static string? PathToExecutable =>
@@ -78,5 +82,9 @@ namespace OnChrome.Core.Helpers
         protected abstract Task<(bool, string?)> UninstallAsyncImpl();
 
         protected abstract string? GetExecutablePathFromAssemblyLocation(string? assemblyLocation);
+
+        protected virtual void FinishSettingUpNativeMessaging() { }
+
+        protected virtual void FinishUnregisteringNativeMessaging() { }
     }
 }
