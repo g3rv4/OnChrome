@@ -14,8 +14,15 @@ const blockUrl = function (requestDetails) {
             return
         }
         browser.runtime.sendNativeMessage(
-            "me.onchro",
-            { url: requestDetails.url, profile: currentProfile }).then(() => browser.tabs.remove(requestDetails.tabId), onError);
+            "me.onchro.netcore",
+            { command: "open", url: requestDetails.url, profile: currentProfile })
+            .then(r => {
+                if (r.success) {
+                    browser.tabs.remove(requestDetails.tabId)
+                } else {
+                    onError(r.errorMessage);
+                }
+            }, onError);
         resolve({ cancel: true });
     });
 }
@@ -39,3 +46,22 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         chrome.storage.sync.get(["urls", "profile", "exclusions"], res => registerUrls(res.urls, res.exclusions, res.profile))
     }
 });
+
+// have the extension check the status of the native app
+async function checkStatus()
+{
+    let success = false;
+    try {
+        const response = await browser.runtime.sendNativeMessage("me.onchro.netcore", {
+            command: "compatibility",
+            extensionVersion: browser.runtime.getManifest().version
+        });
+        success = response.success && response.compatibilityStatus === "Ok"
+    } catch {}
+
+    browser.browserAction.setBadgeText({text: success ? "" : "!"});
+
+    setTimeout(checkStatus, 10000);
+}
+
+checkStatus()

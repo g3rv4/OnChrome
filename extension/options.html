@@ -4,29 +4,103 @@
 <head>
     <title>OnChrome</title>
     <meta charset="utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet"
+        href="/css/bulma.0.9.min.css" />
+    <link rel="stylesheet"
+        href="/css/site.css" />
 </head>
 
-<body style="min-width: 200px;">
-    <h1>OnChrome</h1>
-    <form id="the-form"
-        class="container"
-        method="POST"
-        action="">
-    <p>The following urls will be opened in Chrome automatically.</p>
-        <label>
-            Url <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns">match patterns</a> (one per line)<br />
-            <textarea style="width: 100%" rows="10" id="urls"></textarea>
-        </label>
-        <label>
-            Exclusions: Regular expression matches (one per line)<br />
-            <textarea style="width: 100%" rows="10" id="exclusions"></textarea>
-        </label>
-        <label>
-            Chrome profile (leave blank for <i>last-used</i> profile):
-            <input type="text" size="15" id="profile"></input>
-        </label>
-        <button type="button" id="save" style="width: 100%">Save</button>
-    </form>
-    <script type="text/javascript" src="options.js"></script>
+<body style="min-height: 600px;">
+    <div style="width: 400px;"
+        class="cont">
+        <div class="columns is-flex is-vcentered is-centered cont mt-0 mb-0">
+            <div class="box"
+                style="width: 90%;">
+                <article class="media">
+                    <div class="media-content">
+                        <div class="content">
+                            <form id="the-form"
+                                class="container"
+                                method="POST"
+                                action="">
+                                <div class="field">
+                                    <label class="label">Url <a
+                                            href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Match_patterns">match
+                                            patterns</a> (one per line) to open on Chrome</label>
+                                    <div class="control">
+                                        <textarea class="textarea"
+                                            rows="5"
+                                            id="urls"></textarea>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Unless the url matches either of the following regular
+                                        expressions (one per line)</label>
+                                    <div class="control">
+                                        <textarea class="textarea"
+                                            rows="3"
+                                            id="exclusions"></textarea>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Chrome profile (leave blank for <i>last-used</i>
+                                        profile):</label>
+                                    <div class="control">
+                                        <input type="text"
+                                            class="input"
+                                            size="15"
+                                            id="profile"></input>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="control">
+                                        <button type="button"
+                                            id="save"
+                                            class="button is-primary"
+                                            style="width: 100%">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal"
+        id="AppNotInstalled">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="notification is-danger ml-4 mr-4">
+                You have successfully installed OnChrome's extension. You now need to install its native application. To
+                read about it and download it, <a href="https://onchro.me/native-applications">visit onchro.me</a>
+            </div>
+        </div>
+    </div>
+    <div class="modal"
+        id="AppNeedsUpdate">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="notification is-warning ml-4 mr-4">
+                There is a new version of the native app, to update it <a href="https://onchro.me/native-applications">visit onchro.me</a>
+            </div>
+        </div>
+    </div>
+    <div class="modal"
+        id="ExtensionNeedsUpdate">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="notification is-warning ml-4 mr-4">
+                There is a new version of the extension. To update it <a href="https://addons.mozilla.org/en-US/firefox/addon/onchrome/">visit the firefox store</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript"
+        src="/options.js"></script>
 </body>
+
 </html>

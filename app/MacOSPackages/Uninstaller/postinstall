@@ -1,0 +1,6 @@
+#!/bin/sh
+sudo -u $USER /usr/local/share/OnChrome/OnChrome unregister
+rm -rf /usr/local/share/OnChrome
+rm /etc/paths.d/OnChrome
+pkgutil --forget me.onchro
+exit 0
