@@ -1,7 +1,6 @@
 using System;
+using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
-using CliWrap;
 
 namespace OnChrome.Core.Helpers
 {
@@ -16,7 +15,7 @@ namespace OnChrome.Core.Helpers
             return Path.Combine(home, "Library/Application Support/Mozilla/NativeMessagingHosts/me.onchro.netcore.json");
         }
 
-        protected override async Task OpenChromeAsyncImpl(string url, string? profile)
+        protected override void OpenChromeImpl(string url, string? profile)
         {
             var arguments = @"-a ""Google Chrome"" ";
             if (profile.HasValue())
@@ -26,12 +25,10 @@ namespace OnChrome.Core.Helpers
 
             arguments += url;
 
-            await Cli.Wrap("open")
-                .WithArguments(arguments)
-                .ExecuteAsync();
+            Process.Start("open", arguments);
         }
 
-        protected override async Task<(bool, string?)> UninstallAsyncImpl()
+        protected override (bool, string?) UninstallImpl()
         {
             var directory = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location);
             if (directory == null)
@@ -42,9 +39,7 @@ namespace OnChrome.Core.Helpers
             if (!File.Exists(uninstallerPath))
                 return (false, "Could not find uninstall package at " + directory);
             
-            await Cli.Wrap("open")
-                .WithArguments(uninstallerPath)
-                .ExecuteAsync();
+            Process.Start("open", uninstallerPath);
             return (true, null);
         }
 

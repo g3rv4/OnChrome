@@ -27,11 +27,11 @@ namespace OnChrome.Core.Helpers
             throw new Exception("Non supported OS");
         }
 
-        public static Task OpenChromeAsync(string url, string? profile) =>
-            Instance.OpenChromeAsyncImpl(url, profile);
+        public static void OpenChrome(string url, string? profile) =>
+            Instance.OpenChromeImpl(url, profile);
 
-        public static Task<(bool, string?)> UninstallAsync() =>
-            Instance.UninstallAsyncImpl();
+        public static (bool, string?) Uninstall() =>
+            Instance.UninstallImpl();
 
         public static RegistrationState GetNativeMessagingState()
         {
@@ -77,9 +77,9 @@ namespace OnChrome.Core.Helpers
 
         protected abstract string ManifestPath { get; }
 
-        protected abstract Task OpenChromeAsyncImpl(string url, string? profile);
+        protected abstract void OpenChromeImpl(string url, string? profile);
 
-        protected abstract Task<(bool, string?)> UninstallAsyncImpl();
+        protected abstract (bool, string?) UninstallImpl();
 
         protected abstract string? GetExecutablePathFromAssemblyLocation(string? assemblyLocation);
 

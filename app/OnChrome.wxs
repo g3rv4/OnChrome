@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Product Id="CA1D68D1-B944-4E41-99B1-442B305778D9" UpgradeCode="5C006A39-A082-4A35-B510-C4E7604B179B" Version="1.0.0.1" Language="1033" Name="OnChrome" Manufacturer="Gervasio Marchand Cassataro">
+        <Package Id="*" InstallerVersion="300" Compressed="yes"/>
+        <Media Id="1" Cabinet="OnChrome.cab" EmbedCab="yes" />
+
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder">
+                <Directory Id="APPLICATIONROOTDIRECTORY" Name="OnChrome"/>
+            </Directory>
+        </Directory>
+
+        <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
+        </DirectoryRef>
+
+        <Feature Id="MainApplication" Title="Main Application" Level="1">
+        </Feature>
+
+        <CustomAction Id="RegisterNativeMessaging" Directory="APPLICATIONROOTDIRECTORY" Execute="immediate"
+            Impersonate="yes" Return="check" ExeCommand='cmd.exe /C "OnChrome.exe register"' />
+
+        <CustomAction Id="UnregisterNativeMessaging" Directory="APPLICATIONROOTDIRECTORY" Execute="immediate"
+            Impersonate="yes" Return="check" ExeCommand='cmd.exe /C "OnChrome.exe unregister"' />
+
+        <InstallExecuteSequence>
+            <Custom Action="RegisterNativeMessaging" After="InstallFinalize">NOT Installed</Custom>
+            <Custom Action="UnregisterNativeMessaging" Before="RemoveFiles">Installed</Custom>
+        </InstallExecuteSequence>
+    </Product>
+</Wix>

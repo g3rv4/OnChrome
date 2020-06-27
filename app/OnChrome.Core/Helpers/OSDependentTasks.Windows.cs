@@ -1,4 +1,3 @@
-using CliWrap;
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -6,13 +5,14 @@ using System.Threading.Tasks;
 
 namespace OnChrome.Core.Helpers
 {
-    internal class WindowsOsTasks : OsDependentTasks
+    internal partial class WindowsOsTasks : OsDependentTasks
     {
         protected override string ManifestPath
         {
             get
             {
-                var directory = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location);
+                var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                var directory = Path.Join(appData, "OnChrome");
                 if (directory == null)
                     throw new Exception("Could not get the directory of the entry assembly");
 
@@ -20,14 +20,12 @@ namespace OnChrome.Core.Helpers
             }
         }
 
-        protected override async Task OpenChromeAsyncImpl(string url, string? profile)
+        protected override void OpenChromeImpl(string url, string? profile)
         {
             var registryValue = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe").GetValue(null);
             if (registryValue is string pathToChrome && pathToChrome.HasValue())
             {
-                await Cli.Wrap(pathToChrome)
-                    .WithArguments(url)
-                    .ExecuteAsync();
+                CreateProcess(pathToChrome, url, Path.GetDirectoryName(pathToChrome) ?? @"c:\");
             }
             else
             {
@@ -35,8 +33,8 @@ namespace OnChrome.Core.Helpers
             }
         }
 
-        protected override Task<(bool, string?)> UninstallAsyncImpl() =>
-            Task.FromResult<(bool, string?)>((false, "Please uninstall it from the control panel"));
+        protected override (bool, string?) UninstallImpl() =>
+            (false, "Please uninstall it from the control panel");
 
         protected override string? GetExecutablePathFromAssemblyLocation(string? assemblyLocation) =>
             assemblyLocation?.Replace(".dll", ".exe");

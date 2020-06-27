@@ -6,9 +6,28 @@
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <LangVersion>8</LangVersion>
     <Nullable>enable</Nullable>
+    
+    <PackageIcon>logo.ico</PackageIcon>
+    <Company>Gervasio Marchand Cassataro</Company>
+    <Authors>Gervasio Marchand Cassataro</Authors>
+    <Description>Native application for https://onchro.me</Description>
+    <Copyright>(c) 2020 Gervasio Marchand. MIT License.</Copyright>
+    <PackageProjectUrl>https://onchro.me</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/g3rv4/OnChrome</RepositoryUrl>
+    <Product>OnChrome</Product>
+    <PackageId>me.onchro</PackageId>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <NeutralLanguage></NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OnChrome.Core\OnChrome.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="logo.ico">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using OnChrome.Core.Actions;
@@ -9,14 +8,14 @@ namespace OnChrome.Core.Helpers
 {
     public static class NativeMessagesProcessor
     {
-        public static async Task ProcessAsync()
+        public static void Process()
         {
             var request = GetNativeMessagingContent();
             
             var response = request switch
             {
                 CompatibilityRequest m => CompatibilityAction.Process(m),
-                OpenChromeRequest m => await OpenChromeAction.ProcessAsync(m),
+                OpenChromeRequest m => OpenChromeAction.Process(m),
                 _ => new FailedResponse("Could not process the incoming message"),
             };
             
