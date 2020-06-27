@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "OnChrome": {
+      "commandName": "Project",
+      "commandLineArgs": "unregister"
+    }
+  }
+}

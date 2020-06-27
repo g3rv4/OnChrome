@@ -1,7 +1,5 @@
 [CmdletBinding(DefaultParametersetName='None')]
 param(
-    [Parameter(Position=0,Mandatory=$True)][string] $Version,
-
     [Parameter()][switch] $Sign
 )
 
@@ -11,10 +9,13 @@ if (Test-Path "bin"){
 New-Item -Path "." -Name "bin" -ItemType "directory" | Out-Null
 $bin = New-Item -Path "bin" -Name "win64" -ItemType "directory"
 
+[xml]$xmlDoc = Get-Content app/Directory.Build.props
+$version = $xmlDoc['Project']['PropertyGroup']['AssemblyVersion'].InnerText
+
 Copy-Item -Path app/OnChrome.wxs $bin
 
 Push-Location "app/OnChrome"
-dotnet publish -c Release -r win-x64 -o "$($bin)/publish"
+dotnet publish -c Release -r win-x64 /property:Version=$version -o "$($bin)/publish"
 Pop-Location
 
 Push-Location $bin
@@ -23,8 +24,10 @@ Push-Location $bin
 $wxsPath = Join-Path $bin OnChrome.wxs
 [xml]$xmlDoc = Get-Content $wxsPath
 $wix = $xmlDoc['Wix']
-$dirRef = $wix['Product']['DirectoryRef']
-$feature = $wix['Product']['Feature']
+$product = $wix['Product']
+$product.SetAttribute("Version", $version)
+$dirRef = $product['DirectoryRef']
+$feature = $product['Feature']
 
 $filesToSign = @()
 

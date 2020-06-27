@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+
+    <Company>Gervasio Marchand Cassataro</Company>
+    <Authors>Gervasio Marchand Cassataro</Authors>
+    <Description>Native application for https://onchro.me</Description>
+    <Copyright>(c) 2020 Gervasio Marchand. MIT License.</Copyright>
+    <PackageProjectUrl>https://onchro.me</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/g3rv4/OnChrome</RepositoryUrl>
+    <Product>OnChrome</Product>
+  </PropertyGroup>
+</Project>
