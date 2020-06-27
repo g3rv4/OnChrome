@@ -1,7 +1,5 @@
 [CmdletBinding(DefaultParametersetName='None')]
 param(
-    [Parameter(Position=0,Mandatory=$True)][string] $Version,
-
     [Parameter(ParameterSetName='CodeSign',Mandatory=$false)][switch] $CodeSign,
     [Parameter(ParameterSetName='CodeSign',Mandatory=$true)][string] $CodeSignIdentity,
     [Parameter(ParameterSetName='CodeSign',Mandatory=$true)][string] $CodeSignPackageIdentity,
@@ -30,6 +28,9 @@ if (Test-Path $binMac){
 }
 New-Item -Path "." -Name "bin" -ItemType "directory" | Out-Null
 $binMac = New-Item -Path "bin" -Name "macOS" -ItemType "directory"
+
+[xml]$xmlDoc = Get-Content app/Directory.Build.props
+$version = $xmlDoc['Project']['PropertyGroup']['AssemblyVersion'].InnerText
 
 $macOsInstallerFilesPath = Join-Path (pwd) "app" "MacOSPackages"
 
@@ -101,7 +102,7 @@ function buildInstaller
     Move-Item temp.pkg $pkg
 }
 
-pkgbuild --nopayload --scripts Uninstaller/scripts --identifier me.onchro.uninstall --version $Version OnChrome.Uninstall.unsigned.pkg
+pkgbuild --nopayload --scripts Uninstaller/scripts --identifier me.onchro.uninstall --version $version OnChrome.Uninstall.unsigned.pkg
 buildInstaller OnChrome.Uninstall.unsigned.pkg "$($macOsInstallerFilesPath)/Uninstaller/resources" "OnChrome Uninstaller"
 
 if ($CodeSign) {
@@ -112,7 +113,7 @@ if ($CodeSign) {
 
 Copy-Item OnChrome.Uninstall.pkg Installer/payload/usr/local/share/OnChrome/
 
-pkgbuild --root Installer/payload --scripts Installer/scripts --identifier me.onchro --version $Version OnChrome.unsigned.pkg
+pkgbuild --root Installer/payload --scripts Installer/scripts --identifier me.onchro --version $version OnChrome.unsigned.pkg
 buildInstaller OnChrome.unsigned.pkg "$($macOsInstallerFilesPath)/Installer/resources" "OnChrome"
 
 if ($CodeSign) {
@@ -130,7 +131,7 @@ function staple {
     )
 
     $timestamp = [int][double]::Parse((Get-Date -UFormat %s))
-    $bundle = "$($Bundle).$($Version)-$($timestamp)"
+    $bundle = "$($Bundle).$($version)-$($timestamp)"
 
     "Sending the bundle $bundle to Apple for notarization"
 
@@ -170,5 +171,5 @@ function staple {
 
 if ($CodeSign) {
     staple -File "$($installerPath)/OnChrome.pkg" -Bundle me.onchro
-    copyFileCreatingFolder -Source "$($installerPath)/OnChrome.pkg" -Dest "dist/$($Version)/OnChrome.pkg"
+    copyFileCreatingFolder -Source "$($installerPath)/OnChrome.pkg" -Dest "dist/$($version)/OnChrome.pkg"
 }
