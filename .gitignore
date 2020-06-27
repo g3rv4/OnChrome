@@ -2,8 +2,6 @@
 *.syso
 launch.json
 bin/
-app/OnChrome/logo.ico
-app/OnChrome/versioninfo.json
 obj/
 .idea/
 *.user
