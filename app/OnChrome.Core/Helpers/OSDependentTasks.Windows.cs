@@ -25,7 +25,12 @@ namespace OnChrome.Core.Helpers
             var registryValue = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe").GetValue(null);
             if (registryValue is string pathToChrome && pathToChrome.HasValue())
             {
-                CreateProcess(pathToChrome, url, Path.GetDirectoryName(pathToChrome) ?? @"c:\");
+                var args = url;
+                if (profile.HasValue())
+                {
+                    args = $@"--profile-directory=""{profile}"" " + args;
+                }
+                CreateProcess(pathToChrome, args, Path.GetDirectoryName(pathToChrome) ?? @"c:\");
             }
             else
             {
@@ -47,7 +52,11 @@ namespace OnChrome.Core.Helpers
 
         protected override void FinishUnregisteringNativeMessaging()
         {
-            Registry.CurrentUser.DeleteSubKey(@"Software\Mozilla\NativeMessagingHosts\me.onchro.netcore");
+            try
+            {
+                Registry.CurrentUser.DeleteSubKey(@"Software\Mozilla\NativeMessagingHosts\me.onchro.netcore");
+            }
+            catch { }
         }
     }
 }
