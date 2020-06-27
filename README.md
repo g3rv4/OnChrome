@@ -19,5 +19,3 @@ Read [my blog post about it](https://g3rv4.com/2019/06/how-to-migrate-to-firefox
 ## Why do I need to install software on my machine? I never had to do it for an extension before!
 
 Ugh, yeah... I know... that sucks. The reason is that Firefox can't talk to Chrome directly... you need to use [Native Messaging](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging), and that requires a native app that understands the messages from the extension and in turn opens Chrome.
-
-I chose Go to program this application (with the installer / uninstaller... that take care of all the registrations) because it has 0 dependencies. You just run the executables and that's it. Also, their source code [is available](https://github.com/g3rv4/OnChrome/tree/master/app) for you to build it on your own.
