@@ -27,7 +27,7 @@
             Impersonate="yes" Return="ignore" ExeCommand='cmd.exe /C "OnChrome.exe unregister"' />
 
         <InstallExecuteSequence>
-            <Custom Action="RegisterNativeMessaging" After="InstallFinalize">NOT Installed</Custom>
+            <Custom Action="RegisterNativeMessaging" After="InstallFinalize">NOT Installed OR NOT REMOVE OR REINSTALL OR UPGRADINGPRODUCTCODE</Custom>
             <Custom Action="UnregisterNativeMessaging" Before="RemoveFiles">Installed</Custom>
         </InstallExecuteSequence>
     </Product>
