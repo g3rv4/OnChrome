@@ -27,10 +27,12 @@ const blockUrl = function (requestDetails) {
     });
 }
 
+// from http://devdoc.net/web/developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/match_patterns.html
+const matchPattern = (/^(?:(\*|http|https|file|ftp|app):\/\/(\*|(?:\*\.)?[^\/\*]+|)\/(.*))$/i);
 function registerUrls(urls, exclusions, profile) {
     currentProfile = profile;
     if (urls) {
-        urls = JSON.parse(urls);
+        urls = JSON.parse(urls).filter(u => matchPattern.exec(u));
         currentExclusions = exclusions ? JSON.parse(exclusions).map(s => new RegExp(s)) : [];
         if (urls && urls.length) {
             browser.webRequest.onBeforeRequest.addListener(blockUrl, { urls: urls, types: ["main_frame"] }, ["blocking"])
