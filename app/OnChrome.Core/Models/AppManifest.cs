@@ -10,7 +10,7 @@ namespace OnChrome.Core.Models
         public static AppManifest Instance => _instance ??= new AppManifest
         (
             name: "me.onchro.netcore",
-            description: "Extension to open certain urls on chrome. Visit onchro.me for details",
+            description: "Extension to open certain urls on chrome. Visit onchrome.gervas.io for details",
             path: OsDependentTasks.PathToExecutable ?? "",
             type: "stdio",
             allowedExtensions: new [] { "onchrome@gervas.io" }

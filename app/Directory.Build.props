@@ -4,9 +4,9 @@
 
     <Company>Gervasio Marchand Cassataro</Company>
     <Authors>Gervasio Marchand Cassataro</Authors>
-    <Description>Native application for https://onchro.me</Description>
+    <Description>Native application for https://onchrome.gervas.io</Description>
     <Copyright>(c) 2020 Gervasio Marchand. MIT License.</Copyright>
-    <PackageProjectUrl>https://onchro.me</PackageProjectUrl>
+    <PackageProjectUrl>https://onchrome.gervas.io</PackageProjectUrl>
     <RepositoryUrl>https://github.com/g3rv4/OnChrome</RepositoryUrl>
     <Product>OnChrome</Product>
   </PropertyGroup>
